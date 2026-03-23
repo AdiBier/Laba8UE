@@ -24,6 +24,26 @@ public:
 	/** Constructor */
 	ALaba8UEPlayerController();
 
+	/** Save current player state to default slot */
+	UFUNCTION(BlueprintCallable, Category="SaveLoad")
+	bool SaveGame();
+
+	/** Load current player state from default slot */
+	UFUNCTION(BlueprintCallable, Category="SaveLoad")
+	bool LoadGame();
+
+	/** Toggles paused state and pause menu visibility */
+	UFUNCTION(BlueprintCallable, Category="UI|Pause")
+	void TogglePauseMenu();
+
+	/** Pauses game and shows pause menu */
+	UFUNCTION(BlueprintCallable, Category="UI|Pause")
+	void ShowPauseMenu();
+
+	/** Unpauses game and hides pause menu */
+	UFUNCTION(BlueprintCallable, Category="UI|Pause")
+	void HidePauseMenu();
+
 protected:
 
 	/** Input Mapping Contexts */
@@ -41,6 +61,14 @@ protected:
 	/** Pointer to the mobile controls widget */
 	UPROPERTY()
 	TObjectPtr<UUserWidget> MobileControlsWidget;
+
+	/** Pause menu widget to spawn */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI|Pause")
+	TSubclassOf<UUserWidget> PauseMenuWidgetClass;
+
+	/** Pointer to the pause menu widget */
+	UPROPERTY()
+	TObjectPtr<UUserWidget> PauseMenuWidget;
 
 	/** If true, the player will use UMG touch controls even if not playing on mobile platforms */
 	UPROPERTY(EditAnywhere, Config, Category = "Input|Touch Controls")
