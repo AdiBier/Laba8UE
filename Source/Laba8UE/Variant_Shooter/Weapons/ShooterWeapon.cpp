@@ -2,6 +2,7 @@
 
 
 #include "ShooterWeapon.h"
+#include "Variant_Shooter/AmmoSystem/AmmoComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
 #include "ShooterProjectile.h"
@@ -130,6 +131,18 @@ void AShooterWeapon::Fire()
 	{
 		return;
 	}
+
+	if (AActor* WeaponActorOwner = GetOwner())
+	{
+		if (UAmmoComponent* AmmoComponent = WeaponActorOwner->FindComponentByClass<UAmmoComponent>())
+		{
+			if (!AmmoComponent->ConsumeAmmo())
+			{
+				StopFiring();
+				return;
+			}
+		}
+	}
 	
 	// fire a projectile at the target
 	FireProjectile(WeaponOwner->GetWeaponTargetLocation());
@@ -171,7 +184,7 @@ void AShooterWeapon::FireProjectile(const FVector& TargetLocation)
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.Instigator = PawnOwner;
 
-	AShooterProjectile* Projectile = GetWorld()->SpawnActor<AShooterProjectile>(ProjectileClass, ProjectileTransform, SpawnParams);
+	GetWorld()->SpawnActor<AShooterProjectile>(ProjectileClass, ProjectileTransform, SpawnParams);
 
 	// play the firing montage
 	WeaponOwner->PlayFiringMontage(FiringMontage);

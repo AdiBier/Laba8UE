@@ -15,6 +15,7 @@ public class Laba8UE : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			"AIModule",
+			"GameplayTasks",
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
@@ -29,6 +30,7 @@ public class Laba8UE : ModuleRules
 			"Laba8UE/Variant_Horror/UI",
 			"Laba8UE/Variant_Shooter",
 			"Laba8UE/Variant_Shooter/AI",
+			"Laba8UE/Variant_Shooter/AmmoSystem",
 			"Laba8UE/Variant_Shooter/UI",
 			"Laba8UE/Variant_Shooter/Weapons"
 		});

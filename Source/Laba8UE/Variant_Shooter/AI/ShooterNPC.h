@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "Laba8UECharacter.h"
 #include "ShooterWeaponHolder.h"
+#include "Variant_Shooter/AmmoSystem/AmmoComponent.h"
 #include "ShooterNPC.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPawnDeathDelegate);
 
 class AShooterWeapon;
+class AAmmoPickup;
 
 /**
  *  A simple AI-controlled shooter game NPC
@@ -22,6 +24,8 @@ class LABA8UE_API AShooterNPC : public ALaba8UECharacter, public IShooterWeaponH
 	GENERATED_BODY()
 
 public:
+	/** Constructor */
+	AShooterNPC();
 
 	/** Current HP for this character. It dies if it reaches zero through damage */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Damage")
@@ -46,11 +50,16 @@ protected:
 	FName DeathTag = FName("Dead");
 
 	/** Pointer to the equipped weapon */
+	UPROPERTY(VisibleInstanceOnly, Category="Weapon")
 	TObjectPtr<AShooterWeapon> Weapon;
 
 	/** Type of weapon to spawn for this character */
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AShooterWeapon> WeaponClass;
+
+	/** Ammo reserve component – tracks how many rounds this NPC can still fire */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ammo")
+	TObjectPtr<UAmmoComponent> AmmoComponent;
 
 	/** Name of the first person mesh weapon socket */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category ="Weapons")
@@ -77,6 +86,7 @@ protected:
 	float MaxAimOffsetZ = -60.0f;
 
 	/** Actor currently being targeted */
+	UPROPERTY(VisibleInstanceOnly, Category="Aim")
 	TObjectPtr<AActor> CurrentAimTarget;
 
 	/** If true, this character is currently shooting its weapon */
@@ -140,6 +150,16 @@ public:
 	//~End IShooterWeaponHolder interface
 
 protected:
+	/** Called when the ammo reserve reaches zero */
+	UFUNCTION()
+	void HandleAmmoDepleted();
+
+	/** Called whenever ammo changes */
+	UFUNCTION()
+	void HandleAmmoChanged(int32 CurrentAmmo, int32 MaxAmmo);
+
+	/** Fallback seek logic used when StateTree is not configured or not transitioning to ammo state */
+	bool SeekNearestAmmoPickup();
 
 	/** Called when HP is depleted and the character should die */
 	void Die();
@@ -154,4 +174,8 @@ public:
 
 	/** Signals this character to stop shooting */
 	void StopShooting();
+
+	/** Returns the ammo component */
+	UFUNCTION(BlueprintPure, Category="Ammo")
+	UAmmoComponent* GetAmmoComponent() const { return AmmoComponent; }
 };
